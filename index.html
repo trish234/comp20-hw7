@@ -6,6 +6,61 @@
 </head>
 
 <body>
+
+	<script language="javascript">
+	// Added by me
+	function fillTotals() {
+		var table = document.getElementById("order-table");
+		var rows = table.getElementsByTagName("tr");
+		var subtotal = document.getElementById("subtotal");
+		subtotal.value = 0;
+		for (var i = 0; i < 5; i++){
+			var cols = rows[i + 1].getElementsByTagName("td");
+			var cost = cols[3].getElementsByTagName("input");
+			if (cost[0].value){
+				subtotal.value = parseFloat(subtotal.value) + parseFloat(cost[0].value);
+			}
+		}
+		var tax = document.getElementById("tax");
+		tax.value = (0.0675 * subtotal.value).toFixed(2);
+		var total = document.getElementById("total");
+		total.value = (parseFloat(subtotal.value) + parseFloat(tax.value)).toFixed(2);
+		return;
+	}
+	function quantityFill()
+	{
+		var selectElem = event.target;
+		var row = selectElem.parentNode.parentNode;
+		var allCol = row.getElementsByTagName("td");
+		var price = 0;
+		switch (allCol[1].innerHTML){
+			case ("Chicken Chop Suey"): price = 4.5; break;
+			case ("Sweet and Sour Pork"): price = 6.25; break;
+			case ("Shrimp Lo Mein"): price = 5.25; break;
+			case ("Moo Shi Chicken"): price = 6.5; break;
+			case ("Fried Rice"): price = 2.35; break;
+		}
+
+		var costTag = allCol[3].getElementsByTagName("input");
+		//costTag.innerHTML = "$<input type='text' name='cost'>" + price * selectElem.selectedIndex + "</input></td></tr>";
+		costTag[0].value = (price * selectElem.selectedIndex).toFixed(2);
+		fillTotals();
+		return;
+	}
+
+	//on load
+	window.onload = function(){
+		var elems = document.getElementsByTagName("select");
+		for (var i = 0; i < elems.length; i++){
+			elems[i].addEventListener("change", quantityFill);
+		}
+
+	}
+	</script>
+
+
+
+
 <script language="javascript">
 
 function MenuItem(name, cost)
@@ -28,7 +83,7 @@ function makeSelect(name, minRange, maxRange)
 	t = "<select name='" + name + "' size='1'>";
 	for (j=minRange; j<=maxRange; j++)
 	   t += "<option>" + j + "</option>";
-	t+= "</select>"; 
+	t+= "</select>";
 	return t;
 }
 </script>
@@ -41,12 +96,12 @@ function makeSelect(name, minRange, maxRange)
 <p>Street: <input type="text"  name='street' /></p>
 <p>City: <input type="text"  name='city' /></p>
 <p>Phone*: <input type="text"  name='phone' /></p>
-<p> 
-	<input type="radio"  name="p_or_d" value = "pickup" checked="checked"/>Pickup  
+<p>
+	<input type="radio"  name="p_or_d" value = "pickup" checked="checked"/>Pickup
 	<input type="radio"  name='p_or_d' value = 'delivery'/>
 	Delivery
 </p>
-<table border="0" cellpadding="3">
+<table id="order-table" border="0" cellpadding="3">
   <tr>
     <th>Select Item</th>
     <th>Item Name</th>
@@ -67,16 +122,18 @@ function makeSelect(name, minRange, maxRange)
   document.writeln(s);
 </script>
 </table>
-<p>Subtotal: 
-   $<input type="text"  name='subtotal' id="subtotal" />
+<p>Subtotal:
+   $<input id="subtotal" type="text" name='subtotal' id="subtotal" />
 </p>
 <p>Mass tax 6.25%:
-  $ <input type="text"  name='tax' id="tax" />
+  $ <input id="tax" type="text"  name='tax' id="tax" />
 </p>
-<p>Total: $ <input type="text"  name='total' id="total" />
+<p>Total: $ <input id ="total" type="text"  name='total' id="total" />
 </p>
 
-<input type = "submit" value = "Submit Order" />
+<input id="submit" type = "submit" value = "Submit Order" />
+
+
 
 </form>
 </body>

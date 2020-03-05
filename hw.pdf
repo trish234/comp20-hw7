@@ -1,0 +1,169 @@
+
+
+1. If I had an extra two weeks I would add a map component that shows where either where the customer is 
+   or where the business is. 
+2. The thing I like best about javascript is that it still runs the correctly implemented lines of code,
+   even when you make mistakes in other pieces in the syntax.
+
+
+********* CODE *****************
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Jade Delight</title>
+</head>
+
+<body>
+
+	<script language="javascript">
+	// Added by me
+	function fillTotals() {
+		var table = document.getElementById("order-table");
+		var rows = table.getElementsByTagName("tr");
+		var subtotal = document.getElementById("subtotal");
+		subtotal.value = 0;
+		for (var i = 0; i < 5; i++){
+			var cols = rows[i + 1].getElementsByTagName("td");
+			var cost = cols[3].getElementsByTagName("input");
+			if (cost[0].value){
+				subtotal.value = parseFloat(subtotal.value) + parseFloat(cost[0].value);
+			}
+		}
+		var tax = document.getElementById("tax");
+		tax.value = (0.0675 * subtotal.value).toFixed(2);
+		var total = document.getElementById("total");
+		total.value = (parseFloat(subtotal.value) + parseFloat(tax.value)).toFixed(2);
+		return;
+	}
+	function quantityFill()
+	{
+		var selectElem = event.target;
+		var row = selectElem.parentNode.parentNode;
+		var allCol = row.getElementsByTagName("td");
+		var price = 0;
+		switch (allCol[1].innerHTML){
+			case ("Chicken Chop Suey"): price = 4.5; break;
+			case ("Sweet and Sour Pork"): price = 6.25; break;
+			case ("Shrimp Lo Mein"): price = 5.25; break;
+			case ("Moo Shi Chicken"): price = 6.5; break;
+			case ("Fried Rice"): price = 2.35; break;
+		}
+
+		var costTag = allCol[3].getElementsByTagName("input");
+		//costTag.innerHTML = "$<input type='text' name='cost'>" + price * selectElem.selectedIndex + "</input></td></tr>";
+		costTag[0].value = (price * selectElem.selectedIndex).toFixed(2);
+		fillTotals();
+		return;
+	}
+	/* Expects: (int minutes) to be less than 60 */
+	function calcTime(minutes){
+		const now = new Date();
+		const min = now.getMinutes();
+		console.log(min);
+		if ((parseInt(now.getMinutes()) + parseInt(minutes)) < 60){
+			now.setMinutes(parseInt(now.getMinutes()) + parseInt(minutes));
+		} else {
+			var difference = (parseInt(now.getMinutes()) + parseInt(minutes));
+			now.setMinutes(parseInt(difference));
+			if (now.getHours() < 12){
+				now.setHours(now.getHours() + 1);
+			} else {
+				now.setHours(1);
+			}
+		}
+		console.log(now.getHours());
+		var time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+		return time;
+	}
+
+	function submitStuff(){
+	  var total = document.getElementById("total");
+		total = total.value;
+		var feedback = document.getElementById("feedback");
+		var lastName = document.getElementById("last-name");
+		if (!lastName.value){
+			window.alert("Enter a last name.");
+			return;
+		}
+		var phoneFormat = /^\d{10}$/;
+		var phoneNum = document.getElementById("phone");
+		console.log(phoneNum.value);
+		if (!phoneNum.value || !((phoneNum.value).match(phoneFormat))){
+			window.alert("Valid phone number required. xxx-xxx-xxxx");
+			return;
+		}
+		var pickup = document.getElementById("pickup");
+		var time = "";
+		if (pickup.checked){
+			time = calcTime(15);
+			document.writeln("Expected pickup time: " + time);
+		} else {
+			//delivery checked
+			var street = document.getElementById("street");
+			var city = document.getElementById("city");
+			if (!street.value || !city.value){
+				window.alert("Enter a valid street and city.");
+				return;
+			}
+			time = calcTime(30);
+			document.writeln("Expected delivery time: " + time + "\sn");
+		}
+		document.writeln("   Thank you for your order! \n");
+		document.writeln("    Total is: $" + total);
+
+	}
+</script>
+
+
+
+<h1>Jade Delight</h1>
+<form id="submit">
+
+<p>First Name: <input type="text"  name='fname' /></p>
+<p>Last Name*:  <input id="last-name" type="text"  name='lname' /></p>
+<p>Street: <input id="street" type="text"  name='street' /></p>
+<p>City: <input id="city" type="text"  name='city' /></p>
+<p>Phone*: <input id="phone" type="text"  name='phone' /></p>
+<p >
+	<input id="pickup" type="radio"  name="p_or_d" value = "pickup" checked="checked"/>Pickup
+	<input type="radio"  name='p_or_d' value = 'delivery'/>
+	Delivery
+</p>
+<table id="order-table" border="0" cellpadding="3">
+  <tr>
+    <th>Select Item</th>
+    <th>Item Name</th>
+    <th>Cost Each</th>
+    <th>Total Cost</th>
+  </tr>
+
+</table>
+<p>Subtotal:
+   $<input id="subtotal" type="text" name='subtotal' id="subtotal" />
+</p>
+<p>Mass tax 6.25%:
+  $ <input id="tax" type="text"  name='tax' id="tax" />
+</p>
+<p>Total: $ <input id ="total" type="text"  name='total' id="total" />
+</p>
+
+<input type ="submit" value = "Submit Order" />
+
+</form>
+<p id="feedback"> </p>
+
+
+
+<script>
+		var elems = document.getElementsByTagName("select");
+		for (var i = 0; i < elems.length; i++){
+			elems[i].addEventListener("change", quantityFill);
+		}
+		var submit = document.getElementById("submit");
+		var formThing = document.getElementById("submit")
+		formThing.addEventListener("submit", submitStuff);
+	</script>
+</body>
+</html>

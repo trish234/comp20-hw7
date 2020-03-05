@@ -47,16 +47,64 @@
 		fillTotals();
 		return;
 	}
-
-	//on load
-	window.onload = function(){
-		var elems = document.getElementsByTagName("select");
-		for (var i = 0; i < elems.length; i++){
-			elems[i].addEventListener("change", quantityFill);
+	/* Expects: (int minutes) to be less than 60 */
+	function calcTime(minutes){
+		const now = new Date();
+		const min = now.getMinutes();
+		console.log(min);
+		if ((parseInt(now.getMinutes()) + parseInt(minutes)) < 60){
+			now.setMinutes(parseInt(now.getMinutes()) + parseInt(minutes));
+		} else {
+			var difference = (parseInt(now.getMinutes()) + parseInt(minutes));
+			now.setMinutes(parseInt(difference));
+			if (now.getHours() < 12){
+				now.setHours(now.getHours() + 1);
+			} else {
+				now.setHours(1);
+			}
 		}
+		console.log(now.getHours());
+		var time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+		return time;
+	}
+
+	function submitStuff(){
+	  var total = document.getElementById("total");
+		total = total.value;
+		var feedback = document.getElementById("feedback");
+		var lastName = document.getElementById("last-name");
+		if (!lastName.value){
+			window.alert("Enter a last name.");
+			return;
+		}
+		var phoneFormat = /^\d{10}$/;
+		var phoneNum = document.getElementById("phone");
+		console.log(phoneNum.value);
+		if (!phoneNum.value || !((phoneNum.value).match(phoneFormat))){
+			window.alert("Valid phone number required. xxx-xxx-xxxx");
+			return;
+		}
+		var pickup = document.getElementById("pickup");
+		var time = "";
+		if (pickup.checked){
+			time = calcTime(15);
+			document.writeln("Expected pickup time: " + time);
+		} else {
+			//delivery checked
+			var street = document.getElementById("street");
+			var city = document.getElementById("city");
+			if (!street.value || !city.value){
+				window.alert("Enter a valid street and city.");
+				return;
+			}
+			time = calcTime(30);
+			document.writeln("Expected delivery time: " + time + "\sn");
+		}
+		document.writeln("   Thank you for your order! \n");
+		document.writeln("    Total is: $" + total);
 
 	}
-	</script>
+</script>
 
 
 
@@ -89,15 +137,15 @@ function makeSelect(name, minRange, maxRange)
 </script>
 
 <h1>Jade Delight</h1>
-<form>
+<form id="submit">
 
 <p>First Name: <input type="text"  name='fname' /></p>
-<p>Last Name*:  <input type="text"  name='lname' /></p>
-<p>Street: <input type="text"  name='street' /></p>
-<p>City: <input type="text"  name='city' /></p>
-<p>Phone*: <input type="text"  name='phone' /></p>
-<p>
-	<input type="radio"  name="p_or_d" value = "pickup" checked="checked"/>Pickup
+<p>Last Name*:  <input id="last-name" type="text"  name='lname' /></p>
+<p>Street: <input id="street" type="text"  name='street' /></p>
+<p>City: <input id="city" type="text"  name='city' /></p>
+<p>Phone*: <input id="phone" type="text"  name='phone' /></p>
+<p >
+	<input id="pickup" type="radio"  name="p_or_d" value = "pickup" checked="checked"/>Pickup
 	<input type="radio"  name='p_or_d' value = 'delivery'/>
 	Delivery
 </p>
@@ -131,10 +179,19 @@ function makeSelect(name, minRange, maxRange)
 <p>Total: $ <input id ="total" type="text"  name='total' id="total" />
 </p>
 
-<input id="submit" type = "submit" value = "Submit Order" />
-
-
+<input type ="submit" value = "Submit Order" />
 
 </form>
+<p id="feedback"> </p>
+
+<script>
+		var elems = document.getElementsByTagName("select");
+		for (var i = 0; i < elems.length; i++){
+			elems[i].addEventListener("change", quantityFill);
+		}
+		var submit = document.getElementById("submit");
+		var formThing = document.getElementById("submit")
+		formThing.addEventListener("submit", submitStuff);
+	</script>
 </body>
 </html>
